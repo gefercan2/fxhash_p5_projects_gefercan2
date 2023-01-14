@@ -1,79 +1,52 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
+<title>Sketch Title</title>
 
 <head>
+	<meta charset="utf-8" />
+	<!-- Line below allows OpenProcessing compatibility, you can remove before uploading to FXHASH -->
+	<script src="https://openprocessing.org/openprocessing_sketch.js"></script>
+	<script src="./p5.min.js"></script>
+	<script src="./mySketch.js"></script>
+	<link rel="stylesheet" type="text/css" href="./style.css">
 
-<title>german.fernandez.images</title>
-
-<!--intro
-My name is German Fernandez Cantos and this is my portfolio of art and design. I have worked in the publishing industry,mainly doing information graphics. But also I am an illustrator.-->
-
-<!--here comes search meta tags-->
-<meta http-equiv="last-modified" content="Thu, 11 May 2020 19:11:42 GMT" />
-<meta name="description" content="Illustration, Infographics and other works from this peruvian designer/ Ilustraciones, infografias y otros trabajos de este disenador peruano."/>
-<meta name="keywords" content="Illustration, Infographics, Information graphics, Information design, design, art, artist, draughtsman, concept art, Painting, drawing, Infografia, Arte, Fine arts,contemporary art, contemporary design, peruvian artist, latin-american artist, identity, self-expression, information design dubai,illustration dubai, gefercan, first peruvian artist in Dubai, dibujo, pintura, pintura contemporanea, arte contemporaneo, infografia, arte, art, concept, idea, expression, gefercan, videoart, videoimage, dibujo, bocetti, acrylic painting, peru, visual thinking, visual art,peru art, creation, creator"/>
-
-<meta name="author" content="German Fernandez, gefercan"/>
-<meta name="google-site-verification" content="F8ZTKypgy-ve7R95tlZAPDmxZfq387WAxpbbTDucTlY" />
-<meta name="copyright" content="© 2000-2020 german fernandez" />
-<meta charset="utf-8">
-
-
-<!--here comes og tags for social media-->
-<meta property="og:title" content="german fernandez cantos, portfolio">
-<meta property="og:site_name" content="german-fernandez.com">
-<meta property="og:description" content="Illustration, infographics and design//ilustración, infografía y diseño">
-<meta property="og:url" content="http://www.german-fernandez.com">
-<meta property="og:image" content="http://www.german-fernandez.com/images/fondo_elephant_1073.jpg">
-<meta name="twitter:title" content="German Fernandez Cantos, portfolio ">
-<meta name="twitter:description" content=" Illustration, infographics and design// ilustración, infografía y diseño">
-<meta name="twitter:image" content="http://www.german-fernandez.com/images/fondo_elephant_1073.jpg">
-<meta name="twitter:card" content="summary_large_image">
-
-
-<!--here setting responsive design-->
-<meta name="viewport"  content="width=device-width, initial-scale=1">
-
-<!--here comes the links for responsive css-->
-<link rel="stylesheet" media="(min-width: 1700px)" href="css/gefercan_landscape.css"  type="text/css">
-<link rel="stylesheet" media="(max-width: 1699px)" href="css/gefercan_max_680.css"  type="text/css">
-<link rel="stylesheet" media="(max-width: 1200px)" href="css/gefercan_min_680.css"  type="text/css">
-<link rel="stylesheet" media="(max-width: 680px)" href="css/gefercan_portrait.css"  type="text/css">
-
-
+	<script id="fxhash-snippet">
+		//---- do not edit the following code (you can indent as you wish)
+		let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
+		var fxhash = "oo" + Array(49).fill(0).map(_ => alphabet[(Math.random() * alphabet.length) | 0]).join('')
+		let b58dec = str => [...str].reduce((p, c) => p * alphabet.length + alphabet.indexOf(c) | 0, 0)
+		let fxhashTrunc = fxhash.slice(2)
+		let regex = new RegExp(".{" + ((fxhashTrunc.length / 4) | 0) + "}", 'g')
+		let hashes = fxhashTrunc.match(regex).map(h => b58dec(h))
+		let sfc32 = (a, b, c, d) => {
+			return () => {
+				a |= 0;
+				b |= 0;
+				c |= 0;
+				d |= 0
+				var t = (a + b | 0) + d | 0
+				d = d + 1 | 0
+				a = b ^ b >>> 9
+				b = c + (c << 3) | 0
+				c = c << 21 | c >>> 11
+				c = c + t | 0
+				return (t >>> 0) / 4294967296
+			}
+		}
+		var fxrand = sfc32(...hashes)
+		// true if preview mode active, false otherwise
+		// you can append preview=1 to the URL to simulate preview active
+		var isFxpreview = new URLSearchParams(window.location.search).get('preview') === "1"
+		// call this method to trigger the preview
+		function fxpreview() {
+			console.log("fxhash: TRIGGER PREVIEW")
+		}
+		//---- /do not edit the following code
+	</script>
 </head>
-<!--finish head-->
-
-
-
-
 
 <body>
 
-
-
-  <div id="container" alt="welcome"> 
-    
-    
-    
-  </div>
-
-
-
-
-
-
-<!------------------------------------------>
-
-
-
-<!------------------------------------------>		
-
-
-
-
-
-
 </body>
+
 </html>
