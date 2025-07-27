@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Network Diagram</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+    </style>
+</head>
+
+
+<body>
+    <script>
+
+        // Transform CSV data to JSON
+        const csvData = `Strophe,Line,Words
+	1,1,Do not go gentle into that good night
+	1,2,Old age should burn and rave at close of day 
+	1,3,Rage rage against the dying of the light
+	,,
+	2,1,Though wise men at their end know dark is right
+	2,2,Because their words had forked no lightning they
+	2,3,Do not go gentle into that good night
+	,,
+	2,1,Good men, the last wave by, crying how bright
+	2,2,Their frail deeds might have danced in a green bay 
+	2,3,Rage rage against the dying of the light
+	,,
+	3,1,Wild men who caught and sang the sun in flight
+	3,2,And learn too late they grieved it on its way
+	3,3,Do not go gentle into that good night
+	,,
+	4,1,Grave men near death who see with blinding sight
+	4,2,Blind eyes could blaze like meteors and be gay
+	4,3,Rage rage against the dying of the light
+	,,
+	5,1,And you  my father there on the sad height
+	5,2,Curse bless me now with your fierce tears I pray
+	5,3,Do not go gentle into that good night
+	5,4,Rage rage against the dying of the light`;
+
+
+	//----------------------------------------
+
+
+
+        let data = { strophes: {}, lines: {}, words: [] };
+        let nodes = [];
+        let springs = [];
+        let currentState = 'initial'; // 'initial', 'line', 'strophe', 'poem'
+        let selectedNode = null;
+        let animating = false;
+
+        
+        function parseCSV() {
+            const lines = csvData.trim().split('\n');
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line === '' || line === ',,') continue;
+                
+                const parts = line.split(',');
+                const strophe = parts[0] ? parseInt(parts[0]) : null;
+                const lineNum = parts[1] ? parseInt(parts[1]) : null;
+                const wordsText = parts.slice(2).join(',').replace(/"/g, '').trim();
+                
+                if (strophe && lineNum && wordsText) {
+                    const lineId = `${strophe}-${lineNum}`;
+                    
+                    if (!data.strophes[strophe]) {
+                        data.strophes[strophe] = [];
+                    }
+                    
+                    if (!data.lines[lineId]) {
+                        data.lines[lineId] = {
+                            strophe: strophe,
+                            line: lineNum,
+                            words: []
+                        };
+                        data.strophes[strophe].push(lineId);
+                    }
+                    
+                    const words = wordsText.split(' ').filter(w => w.length > 0);
+                    words.forEach(word => {
+                        const wordObj = {
+                            text: word,
+                            lineId: lineId,
+                            strophe: strophe
+                        };
+                        data.words.push(wordObj);
+                        data.lines[lineId].words.push(wordObj);
+                    });
+                		}
+            		}
+        	}
+        
+        parseCSV();
+
+
+	//----------------------------------------
+
+        
+
+        
+        class Node {
+            constructor(x, y, text, type, id) {
+                this.x = x;
+                this.y = y;
+                this.targetX = x;
+                this.targetY = y;
+                this.initialX = x;
+                this.initialY = y;
+                this.text = text;
+                this.type = type;
+                this.id = id;
+                this.opacity = 1.0;
+                this.targetOpacity = 1.0;
+                this.connections = [];
+                this.isOrdered = false;
+            }
+            
+            getColor() {
+                const colors = {
+                    'poem': [100, 250, 200],
+                    'strophe': [145, 120, 100],
+                    'line': [100, 150, 255],
+                    'word': [150, 255, 150]
+                };
+                return colors[this.type];
+            }
+            
+            update() {
+                // Smooth animation to target position
+                this.x = lerp(this.x, this.targetX, 0.15);
+                this.y = lerp(this.y, this.targetY, 0.15);
+                this.opacity = lerp(this.opacity, this.targetOpacity, 0.1);
+            }
+            
+            draw() {
+                push();
+                
+                const color = this.getColor();
+                fill(color[0], color[1], color[2], this.opacity * 180);
+                noStroke();//stroke(50, this.opacity * 255);
+                //strokeWeight(2);
+                
+                const padding = 15;
+                textSize(this.type === 'poem' ? 20 : this.type === 'strophe' ? 16 : 14);
+                const textW = textWidth(this.text) + padding;
+                const textH = 25;
+                
+                rectMode(CENTER);
+                rect(this.x, this.y, textW, textH, 10);
+                
+                fill(50, this.opacity * 255);
+                noStroke();
+                textAlign(CENTER, CENTER);
+                if (this.type === 'poem') textStyle(BOLD);
+                
+                text(this.text, this.x, this.y);
+                
+                pop();
+            }
+            
+            contains(mx, my) {
+                textSize(this.type === 'poem' ? 20 : this.type === 'strophe' ? 16 : 14);
+                const textW = textWidth(this.text) + 15;
+                const textH = 25;
+                return mx > this.x - textW/2 && mx < this.x + textW/2 && 
+                       my > this.y - textH/2 && my < this.y + textH/2;
+            }
+            
+            setTarget(x, y, opacity = 1.0) {
+                this.targetX = x;
+                this.targetY = y;
+                this.targetOpacity = opacity;
+            }
+        }
+        
+
+
+
+        class Spring {
+            constructor(nodeA, nodeB) {
+                this.nodeA = nodeA;
+                this.nodeB = nodeB;
+            }
+            
+            draw() {
+                const minOpacity = min(this.nodeA.opacity, this.nodeB.opacity);
+                stroke(100, 100, 100, minOpacity * 80);
+                strokeWeight(1);
+                
+                const dx = this.nodeB.x - this.nodeA.x;
+                const dy = this.nodeB.y - this.nodeA.y;
+                const distance = sqrt(dx * dx + dy * dy);
+                
+                const controlOffset = distance * 0.2;
+                const midX = (this.nodeA.x + this.nodeB.x) / 2;
+                const midY = (this.nodeA.y + this.nodeB.y) / 2;
+                
+                // Perpendicular offset for curve
+                const perpX = -dy / distance * controlOffset;
+                const perpY = dx / distance * controlOffset;
+                
+                noFill();
+                bezier(
+                    this.nodeA.x, this.nodeA.y,
+                    midX + perpX, midY + perpY,
+                    midX - perpX, midY - perpY,
+                    this.nodeB.x, this.nodeB.y
+                );
+            }
+        }
+
+
+	//----------------------------------------
+
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            createNodes();
+            createConnections();
+            resetToInitialState();
+        }
+
+       function draw() {
+            background(250);
+            
+            nodes.forEach(node => node.update());
+            
+            // Draw connections
+            springs.forEach(spring => spring.draw());
+            
+            // Draw nodes
+            nodes.forEach(node => node.draw());
+        }
+
+
+	//----------------------------------------
+
+        
+        function createNodes() {
+            nodes = [];
+            
+            // Create poem supernode
+            nodes.push(new Node(width/2, height/2, 'POEM', 'poem', 'poem'));
+            
+            // Create strophe nodes
+            Object.keys(data.strophes).forEach(strophe => {
+                nodes.push(new Node(0, 0, `Strophe ${strophe}`, 'strophe', strophe));
+            });
+            
+            // Create line nodes
+            Object.keys(data.lines).forEach(lineId => {
+                const line = data.lines[lineId];
+                nodes.push(new Node(0, 0, `Line ${line.strophe}-${line.line}`, 'line', lineId));
+            });
+            
+            // Create word nodes
+            data.words.forEach((word, i) => {
+                nodes.push(new Node(0, 0, word.text, 'word', `${word.lineId}-${i}`));
+            });
+        }
+        
+
+
+
+
+        function createConnections() {
+            springs = [];
+            
+            // Connect poem to strophes
+            const poemNode = nodes.find(n => n.type === 'poem');
+            nodes.forEach(node => {
+                if (node.type === 'strophe') {
+                    springs.push(new Spring(poemNode, node));
+                    poemNode.connections.push(node);
+                }
+            });
+            
+            // Connect strophes to lines
+            nodes.forEach(stropheNode => {
+                if (stropheNode.type === 'strophe') {
+                    nodes.forEach(lineNode => {
+                        if (lineNode.type === 'line') {
+                            const lineData = data.lines[lineNode.id];
+                            if (lineData && lineData.strophe == stropheNode.id) {
+                                springs.push(new Spring(stropheNode, lineNode));
+                                stropheNode.connections.push(lineNode);
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Connect lines to words
+            nodes.forEach(lineNode => {
+                if (lineNode.type === 'line') {
+                    nodes.forEach(wordNode => {
+                        if (wordNode.type === 'word') {
+                            const wordData = data.words.find(w => `${w.lineId}-${data.words.indexOf(w)}` === wordNode.id);
+                            if (wordData && wordData.lineId === lineNode.id) {
+                                springs.push(new Spring(lineNode, wordNode));
+                                lineNode.connections.push(wordNode);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+
+
+        
+ 
+
+
+
+        
+        function mousePressed() {
+            let clickedNode = null;
+            
+            for (let node of nodes) {
+                if (node.contains(mouseX, mouseY)) {
+                    clickedNode = node;
+                    break;
+                }
+            }
+            
+            if (clickedNode) {
+                if (clickedNode.type === 'line' && currentState !== 'line') {
+                    arrangeLineLayout(clickedNode);
+                } else if (clickedNode.type === 'strophe' && currentState !== 'strophe') {
+                    arrangeStropheLayout(clickedNode);
+                } else if (clickedNode.type === 'poem' && currentState !== 'Do not go gentle into that good night') {
+                    arrangePoemLayout();
+                } else if (clickedNode === selectedNode) {
+                    resetToInitialState();
+                } else {
+                    // Different node clicked, switch layouts
+                    if (clickedNode.type === 'line') {
+                        arrangeLineLayout(clickedNode);
+                    } else if (clickedNode.type === 'strophe') {
+                        arrangeStropheLayout(clickedNode);
+                    } else if (clickedNode.type === 'poem') {
+                        arrangePoemLayout();
+                    }
+                }
+                selectedNode = clickedNode;
+            } else {
+                // Clicked outside nodes
+                resetToInitialState();
+            }
+        }
+        
+
+
+
+
+        function resetToInitialState() {
+            currentState = 'initial';
+            selectedNode = null;
+            
+            // Position nodes in circular area
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = min(width, height) * 0.3;
+            
+            nodes.forEach((node, i) => {
+                if (node.type === 'poem') {
+                    node.setTarget(centerX, centerY - radius * 0.7, 1.0);
+                    node.initialX = centerX;
+                    node.initialY = centerY - radius * 0.7;
+                } else {
+                    const angle = (i / (nodes.length - 1)) * TWO_PI;
+                    const r = random(radius * 0.3, radius);
+                    const x = centerX + cos(angle) * r;
+                    const y = centerY + sin(angle) * r;
+                    node.setTarget(x, y, 1.0);
+                    node.initialX = x;
+                    node.initialY = y;
+                }
+                node.isOrdered = false;
+            });
+        }
+        
+
+
+
+
+        function arrangeLineLayout(lineNode) {
+            currentState = 'line';
+            
+            // Set all nodes to low opacity first
+            nodes.forEach(node => {
+                node.setTarget(node.initialX, node.initialY, 0.2);
+                node.isOrdered = false;
+            });
+            
+            // Arrange selected line and its words horizontally at center
+            const centerY = height / 2;
+            const startX = width * 0.2;
+            
+            lineNode.setTarget(startX, centerY, 1.0);
+            lineNode.isOrdered = true;
+            
+            lineNode.connections.forEach((wordNode, i) => {
+                const wordX = startX + 150 + (i * 80);
+                wordNode.setTarget(wordX, centerY, 1.0);
+                wordNode.isOrdered = true;
+            });
+        }
+
+
+        
+        function arrangeStropheLayout(stropheNode) {
+            currentState = 'strophe';
+            
+            // Set all nodes to low opacity first
+            nodes.forEach(node => {
+                node.setTarget(node.initialX, node.initialY, 0.2);
+                node.isOrdered = false;
+            });
+            
+            // Arrange strophe, its lines and words hierarchically
+            const centerY = height / 2;
+            const startX = width * 0.1;
+            
+            stropheNode.setTarget(startX, centerY - 50, 1.0);
+            stropheNode.isOrdered = true;
+            
+            stropheNode.connections.forEach((lineNode, lineIndex) => {
+                const lineY = centerY + (lineIndex * 60);
+                lineNode.setTarget(startX + 200, lineY, 1.0);
+                lineNode.isOrdered = true;
+                
+                lineNode.connections.forEach((wordNode, wordIndex) => {
+                    const wordX = startX + 350 + (wordIndex * 70);
+                    wordNode.setTarget(wordX, lineY, 1.0);
+                    wordNode.isOrdered = true;
+                });
+            });
+        }
+        
+
+
+
+        function arrangePoemLayout() {
+            currentState = 'poem';
+            
+            const poemNode = nodes.find(n => n.type === 'poem');
+            const startY = height * 0.1;
+            let currentY = startY;
+            
+            // Position poem node at top center
+            poemNode.setTarget(width / 2, startY, 1.0);
+            poemNode.isOrdered = true;
+            currentY += 80;
+            
+            // Arrange all strophes, lines, and words hierarchically
+            poemNode.connections.forEach((stropheNode, stropheIndex) => {
+                stropheNode.setTarget(width * 0.1, currentY, 1.0);
+                stropheNode.isOrdered = true;
+                
+                const stropheStartY = currentY;
+                let maxWordsInLine = 0;
+                
+                stropheNode.connections.forEach((lineNode, lineIndex) => {
+                    const lineY = stropheStartY + (lineIndex * 50);
+                    lineNode.setTarget(width * 0.25, lineY, 1.0);
+                    lineNode.isOrdered = true;
+                    
+                    lineNode.connections.forEach((wordNode, wordIndex) => {
+                        const wordX = width * 0.4 + (wordIndex * 65);
+                        wordNode.setTarget(wordX, lineY, 1.0);
+                        wordNode.isOrdered = true;
+                    });
+                    
+                    maxWordsInLine = max(maxWordsInLine, lineNode.connections.length);
+                });
+                
+                currentY += stropheNode.connections.length * 50 + 40;
+            });
+            
+            // Set unordered nodes to low opacity
+            nodes.forEach(node => {
+                if (!node.isOrdered) {
+                    node.setTarget(node.initialX, node.initialY, 0.5);
+                }
+            });
+        }
+
+
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            resetToInitialState();
+        }
+    </script>
+</body>
+</html>
