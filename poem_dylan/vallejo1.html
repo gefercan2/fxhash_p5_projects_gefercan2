@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Network Diagram</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        #file-input { position: absolute; top: 10px; left: 10px; z-index: 1000; }
+    </style>
+</head>
+
+
+<body>
+    <input type="file" id="file-input" accept=".csv" style="display: none;">
+    <button onclick="loadNewCSV()" style="position: absolute; top: 10px; left: 10px; z-index: 1000; padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Load New CSV</button>
+
+    <script>
+        // ==========================================
+        // DATA MANAGEMENT MODULE
+        // ==========================================
+        
+        let data = { strophes: {}, lines: {}, words: [] };
+        
+        // Default CSV data
+        let csvData = `Strophe,Line,Words
+	1,1,Así pasa la vida como raro espejismo 
+	1,2,La rosa azul que alumbra y da el ser al cardo 
+	1,3,junto al dogma del fardo
+	1,4,matador el sofisma del Bien y la Razón
+	,,
+	2,1,Se ha cogido, al acaso, lo que rozó la mano
+	2,2,los perfumes volaron, y entre ellos se ha sentido
+	2,3,el moho que a mitad de la ruta ha crecido
+	2,4,en el manzano seco de la muerta Ilusión
+	,,
+	2,1,Así pasa la vida
+	2,2,con cánticos aleves de agostada bacante
+	2,3,Yo voy todo azorado, adelante... adelante
+	,,
+	3,1,rezongando mi marcha funeral
+	3,2,Van al pie de brahmánicos elefantes reales
+	3,3,y al sórdido abejeo de un hervor mercurial
+	3,4,parejas que alzan brindis esculpidos en roca
+	3,5,y olvidados crepúsculos una cruz en la boca
+	3,6,Así pasa la vida vasta orquesta de Esfinges
+	3,7,que arrojan al vacío su marcha funeral`;
+
+        /**
+         * Parses CSV data and creates hierarchical structure
+         * Uses forEach callback to iterate through lines and build data structure
+         */
+        function parseCSV() {
+            // Reset data structure
+            data = { strophes: {}, lines: {}, words: [] };
+            
+            const lines = csvData.trim().split('\n');
+            
+            // Skip header and process each line - forEach callback iteration
+            lines.slice(1).forEach((line, index) => {
+                const trimmedLine = line.trim();
+                if (trimmedLine === '' || trimmedLine === ',,') return;
+                
+                const parts = trimmedLine.split(',');
+                const strophe = parts[0] ? parseInt(parts[0]) : null;
+                const lineNum = parts[1] ? parseInt(parts[1]) : null;
+                const wordsText = parts.slice(2).join(',').replace(/"/g, '').trim();
+                
+                if (strophe && lineNum && wordsText) {
+                    const lineId = `${strophe}-${lineNum}`;
+                    
+                    // Initialize strophe if doesn't exist
+                    if (!data.strophes[strophe]) {
+                        data.strophes[strophe] = [];
+                    }
+                    
+                    // Initialize line if doesn't exist
+                    if (!data.lines[lineId]) {
+                        data.lines[lineId] = {
+                            strophe: strophe,
+                            line: lineNum,
+                            words: []
+                        };
+                        data.strophes[strophe].push(lineId);
+                    }
+                    
+                    // Split words and create word objects - forEach callback iteration
+                    const words = wordsText.split(' ').filter(w => w.length > 0);
+                    words.forEach(word => {
+                        const wordObj = {
+                            text: word,
+                            lineId: lineId,
+                            strophe: strophe
+                        };
+                        data.words.push(wordObj);
+                        data.lines[lineId].words.push(wordObj);
+                    });
+                }
+            });
+        }
+
+        /**
+         * File loading functionality - callback function for file input change
+         */
+        function loadNewCSV() {
+            document.getElementById('file-input').click();
+        }
+
+        // Event listener for file input change - callback function
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                // Callback function for file reading completion
+                reader.onload = function(e) {
+                    csvData = e.target.result;
+                    parseCSV();
+                    recreateVisualization();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+
+        // ==========================================
+        // ANIMATION AND FLOATING MODULE
+        // ==========================================
+        
+        /**
+         * Creates floating animation by adding small random variations
+         */
+        class FloatingAnimation {
+            constructor() {
+                this.time = 0;
+                this.speed = 0.02;
+                this.amplitude = 3.5;
+            }
+
+            update() {
+                this.time += this.speed;
+            }
+
+            getOffset(nodeId) {
+                // Create unique floating pattern for each node based on its ID hash
+                const hash = this.hashCode(nodeId.toString());
+                const xOffset = sin(this.time + hash * 0.1) * this.amplitude;
+                const yOffset = cos(this.time * 1.3 + hash * 0.2) * this.amplitude;
+                return { x: xOffset, y: yOffset };
+            }
+
+            // Simple hash function to create unique patterns
+            hashCode(str) {
+                let hash = 0;
+                // for loop to calculate hash
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32-bit integer
+                }
+                return hash;
+            }
+        }
+
+        // ==========================================
+        // NODE CLASS MODULE
+        // ==========================================
+        
+        class Node {
+            constructor(x, y, text, type, id) {
+                this.x = x;
+                this.y = y;
+                this.targetX = x;
+                this.targetY = y;
+                this.initialX = x;
+                this.initialY = y;
+                this.text = text;
+                this.type = type;
+                this.id = id;
+                this.opacity = 1.0;
+                this.targetOpacity = 1.0;
+                this.connections = [];
+                this.isOrdered = false;
+                this.isDragging = false;
+                this.dragOffset = { x: 0, y: 0 };
+            }
+            
+            /**
+             * Returns color array based on node type
+             */
+            getColor() {
+                const colors = {
+                    'poem': 	[220, 270, 240],
+                    'strophe':  [115, 250, 240],
+                    'line': 	[170, 250, 225],
+                    'word': 	[270, 235, 250]
+                };
+                return colors[this.type];
+            }
+            
+            /**
+             * Updates node position and opacity with floating animation
+             */
+            update() {
+                if (!this.isDragging) {
+                    // Get floating offset
+                    const floatingOffset = floatingAnim.getOffset(this.id);
+                    
+                    // Smooth animation to target position with floating effect
+                    this.x = lerp(this.x, this.targetX + floatingOffset.x, 0.15);
+                    this.y = lerp(this.y, this.targetY + floatingOffset.y, 0.15);
+                }
+                
+                // Smooth opacity transition
+                this.opacity = lerp(this.opacity, this.targetOpacity, 0.1);
+            }
+            
+            /**
+             * Renders the node with rounded rectangle and text
+             */
+            draw() {
+                push();
+                
+                const color = this.getColor();
+                fill(color[0], color[1], color[2], this.opacity * 180);
+                //stroke(50, this.opacity * 255);
+                //strokeWeight(0.5);
+		noStroke();
+                
+                const padding = 15;
+                textSize(this.type === 'poem' ? 20 : this.type === 'strophe' ? 16 : 14);
+                const textW = textWidth(this.text) + padding;
+                const textH = 25;
+                
+                rectMode(CENTER);
+                rect(this.x, this.y, textW, textH, 10);
+                
+                fill(50, this.opacity * 255);
+                noStroke();
+                textAlign(CENTER, CENTER);
+                if (this.type === 'poem') textStyle(BOLD);
+                
+                text(this.text, this.x, this.y);
+                
+                pop();
+            }
+            
+            /**
+             * Checks if mouse coordinates are within node bounds
+             */
+            contains(mx, my) {
+                textSize(this.type === 'poem' ? 20 : this.type === 'strophe' ? 16 : 14);
+                const textW = textWidth(this.text) + 15;
+                const textH = 25;
+                return mx > this.x - textW/2 && mx < this.x + textW/2 && 
+                       my > this.y - textH/2 && my < this.y + textH/2;
+            }
+            
+            /**
+             * Sets target position and opacity for smooth transitions
+             */
+            setTarget(x, y, opacity = 1) {
+                this.targetX = x;
+                this.targetY = y;
+                this.targetOpacity = opacity;
+            }
+
+            /**
+             * Starts dragging interaction
+             */
+            startDrag(mx, my) {
+                this.isDragging = true;
+                this.dragOffset.x = this.x - mx;
+                this.dragOffset.y = this.y - my;
+            }
+
+            /**
+             * Updates position during drag
+             */
+            updateDrag(mx, my) {
+                if (this.isDragging) {
+                    this.x = mx + this.dragOffset.x;
+                    this.y = my + this.dragOffset.y;
+                    this.targetX = this.x;
+                    this.targetY = this.y;
+                }
+            }
+
+            /**
+             * Stops dragging interaction
+             */
+            stopDrag() {
+                this.isDragging = false;
+            }
+        }
+
+        // ==========================================
+        // SPRING CONNECTION MODULE
+        // ==========================================
+        
+        class Spring {
+            constructor(nodeA, nodeB) {
+                this.nodeA = nodeA;
+                this.nodeB = nodeB;
+            }
+            
+            /**
+             * Draws curved connection between two nodes
+             */
+            draw() {
+                const minOpacity = min(this.nodeA.opacity, this.nodeB.opacity);
+                stroke(100, 100, 100, minOpacity * 110);
+                strokeWeight(1);
+
+                
+                const dx = this.nodeB.x - this.nodeA.x;
+                const dy = this.nodeB.y - this.nodeA.y;
+                const distance = sqrt(dx * dx + dy * dy);
+                
+                if (distance === 0) return;
+                
+                const controlOffset = distance * 0.1;
+                const midX = (this.nodeA.x + this.nodeB.x) / 2;
+                const midY = (this.nodeA.y + this.nodeB.y) / 2;
+                
+                // Perpendicular offset for curve
+                const perpX = -dy / distance * controlOffset;
+                const perpY = dx / distance * controlOffset;
+                
+                noFill();
+                bezier(
+                    this.nodeA.x, this.nodeA.y,
+                    midX + perpX, midY + perpY,
+                    midX - perpX, midY - perpY,
+                    this.nodeB.x, this.nodeB.y
+                );
+            }
+        }
+
+        // ==========================================
+        // LAYOUT MANAGEMENT MODULE
+        // ==========================================
+        
+        class LayoutManager {
+            /**
+             * Arranges nodes in circular pattern for initial state
+             */
+            static arrangeCircular() {
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = min(width, height) * 0.3;
+                
+                // forEach callback to position each node
+                nodes.forEach((node, i) => {
+                    if (node.type === 'poem') {
+                        node.setTarget(centerX, centerY - radius * 0.7, 2.0);
+                        node.initialX = centerX;
+                        node.initialY = centerY - radius * 0.7;
+                    } else {
+                        const angle = (i / (nodes.length - 1)) * TWO_PI;
+                        const r = random(radius * 0.5, radius);
+                        const x = centerX + cos(angle) * r;
+                        const y = centerY + sin(angle) * r;
+                        node.setTarget(x, y, 1.0);
+                        node.initialX = x;
+                        node.initialY = y;
+                    }
+                    node.isOrdered = false;
+                });
+            }
+
+            /**
+             * Arranges selected line and its words horizontally
+             */
+            static arrangeLineLayout(lineNode) {
+                // forEach callback to set all nodes to low opacity
+                nodes.forEach(node => {
+                    node.setTarget(node.initialX, node.initialY, 0.2);
+                    node.isOrdered = false;
+                });
+                
+                const centerY = height / 2;
+                const startX = width * 0.2;
+                
+                lineNode.setTarget(startX, centerY, 1.0);
+                lineNode.isOrdered = true;
+                
+                // forEach callback to position connected words
+                lineNode.connections.forEach((wordNode, i) => {
+                    const wordX = startX + 150 + (i * 80);
+                    wordNode.setTarget(wordX, centerY, 1.0);
+                    wordNode.isOrdered = true;
+                });
+            }
+
+            /**
+             * Arranges strophe with its lines and words hierarchically
+             */
+            static arrangeStropheLayout(stropheNode) {
+                // forEach callback to reset all nodes
+                nodes.forEach(node => {
+                    node.setTarget(node.initialX, node.initialY, 0.5);
+                    node.isOrdered = false;
+                });
+                
+                const centerY = height / 2;
+                const startX = width * 0.1;
+                
+                stropheNode.setTarget(startX, centerY - 50, 1.0);
+                stropheNode.isOrdered = true;
+                
+                // forEach callback to arrange connected lines
+                stropheNode.connections.forEach((lineNode, lineIndex) => {
+                    const lineY = centerY + (lineIndex * 60);
+                    lineNode.setTarget(startX + 200, lineY, 1.0);
+                    lineNode.isOrdered = true;
+                    
+                    // Nested forEach callback for words in each line
+                    lineNode.connections.forEach((wordNode, wordIndex) => {
+                        const wordX = startX + 350 + (wordIndex * 70);
+                        wordNode.setTarget(wordX, lineY, 1.0);
+                        wordNode.isOrdered = true;
+                    });
+                });
+            }
+
+            /**
+             * Arranges complete poem hierarchy
+             */
+            static arrangePoemLayout() {
+                const poemNode = nodes.find(n => n.type === 'poem');
+                const startY = height * 0.1;
+                let currentY = startY;
+                
+                poemNode.setTarget(width / 2, startY, 1.0);
+                poemNode.isOrdered = true;
+                currentY += 80;
+                
+                // forEach callback to arrange all strophes
+                poemNode.connections.forEach((stropheNode, stropheIndex) => {
+                    stropheNode.setTarget(width * 0.1, currentY, 1.0);
+                    stropheNode.isOrdered = true;
+                    
+                    const stropheStartY = currentY;
+                    
+                    // forEach callback for lines in each strophe
+                    stropheNode.connections.forEach((lineNode, lineIndex) => {
+                        const lineY = stropheStartY + (lineIndex * 50);
+                        lineNode.setTarget(width * 0.25, lineY, 1.0);
+                        lineNode.isOrdered = true;
+                        
+                        // forEach callback for words in each line
+                        lineNode.connections.forEach((wordNode, wordIndex) => {
+                            const wordX = width * 0.4 + (wordIndex * 65);
+                            wordNode.setTarget(wordX, lineY, 1);
+                            wordNode.isOrdered = true;
+                        });
+                    });
+                    
+                    currentY += stropheNode.connections.length * 50 + 40;
+                });
+                
+                // forEach callback to set unordered nodes to low opacity
+                nodes.forEach(node => {
+                    if (!node.isOrdered) {
+                        node.setTarget(node.initialX, node.initialY,0.01);
+                    }
+                });
+            }
+        }
+
+        // ==========================================
+        // MAIN APPLICATION MODULE
+        // ==========================================
+        
+        let nodes = [];
+        let springs = [];
+        let currentState = 'initial';
+        let selectedNode = null;
+        let floatingAnim;
+        let draggedNode = null;
+        
+        /**
+         * Creates all nodes from parsed data
+         */
+        function createNodes() {
+            nodes = [];
+            
+            // Create poem supernode
+            nodes.push(new Node(width/2, height/2, 'La Voz Del Espejo', 'poem', 'poem'));
+            
+            // Create strophe nodes - forEach callback iteration
+            Object.keys(data.strophes).forEach(strophe => {
+                nodes.push(new Node(0, 0, `Strophe ${strophe}`, 'strophe', strophe));
+            });
+            
+            // Create line nodes - forEach callback iteration
+            Object.keys(data.lines).forEach(lineId => {
+                const line = data.lines[lineId];
+                nodes.push(new Node(0, 0, `Line ${line.strophe}-${line.line}`, 'line', lineId));
+            });
+            
+            // Create word nodes - forEach callback iteration
+            data.words.forEach((word, i) => {
+                nodes.push(new Node(0, 0, word.text, 'word', `${word.lineId}-${i}`));
+            });
+        }
+        
+        /**
+         * Creates spring connections between related nodes
+         */
+        function createConnections() {
+            springs = [];
+            
+            const poemNode = nodes.find(n => n.type === 'poem');
+            
+            // Connect poem to strophes - forEach callback iteration
+            nodes.forEach(node => {
+                if (node.type === 'strophe') {
+                    springs.push(new Spring(poemNode, node));
+                    poemNode.connections.push(node);
+                }
+            });
+            
+            // Connect strophes to lines - nested forEach callbacks
+            nodes.forEach(stropheNode => {
+                if (stropheNode.type === 'strophe') {
+                    nodes.forEach(lineNode => {
+                        if (lineNode.type === 'line') {
+                            const lineData = data.lines[lineNode.id];
+                            if (lineData && lineData.strophe == stropheNode.id) {
+                                springs.push(new Spring(stropheNode, lineNode));
+                                stropheNode.connections.push(lineNode);
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Connect lines to words - nested forEach callbacks
+            nodes.forEach(lineNode => {
+                if (lineNode.type === 'line') {
+                    nodes.forEach(wordNode => {
+                        if (wordNode.type === 'word') {
+                            // find callback to locate matching word data
+                            const wordData = data.words.find(w => `${w.lineId}-${data.words.indexOf(w)}` === wordNode.id);
+                            if (wordData && wordData.lineId === lineNode.id) {
+                                springs.push(new Spring(lineNode, wordNode));
+                                lineNode.connections.push(wordNode);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        /**
+         * Recreates entire visualization after CSV change
+         */
+        function recreateVisualization() {
+            createNodes();
+            createConnections();
+            LayoutManager.arrangeCircular();
+            currentState = 'initial';
+            selectedNode = null;
+        }
+        
+        // ==========================================
+        // P5.JS CORE FUNCTIONS
+        // ==========================================
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            floatingAnim = new FloatingAnimation();
+            parseCSV();
+            createNodes();
+            createConnections();
+            LayoutManager.arrangeCircular();
+        }
+        
+        function draw() {
+            background(240);
+            
+            // Update floating animation
+            floatingAnim.update();
+            
+            // Update all nodes - forEach callback iteration
+            nodes.forEach(node => node.update());
+            
+            // Draw all connections - forEach callback iteration
+            springs.forEach(spring => spring.draw());
+            
+            // Draw all nodes - forEach callback iteration
+            nodes.forEach(node => node.draw());
+        }
+        
+        /**
+         * Mouse interaction handler with state management
+         */
+        function mousePressed() {
+            let clickedNode = null;
+            
+            // Find clicked node - for loop with early termination
+            for (let node of nodes) {
+                if (node.contains(mouseX, mouseY)) {
+                    clickedNode = node;
+                    break;
+                }
+            }
+            
+            if (clickedNode) {
+                // Start dragging
+                draggedNode = clickedNode;
+                clickedNode.startDrag(mouseX, mouseY);
+                
+                // State management with if-else logic
+                if (clickedNode.type === 'line' && currentState !== 'line') {
+                    currentState = 'line';
+                    LayoutManager.arrangeLineLayout(clickedNode);
+                } else if (clickedNode.type === 'strophe' && currentState !== 'strophe') {
+                    currentState = 'strophe';
+                    LayoutManager.arrangeStropheLayout(clickedNode);
+                } else if (clickedNode.type === 'poem' && currentState !== 'poem') {
+                    currentState = 'poem';
+                    LayoutManager.arrangePoemLayout();
+                } else if (clickedNode === selectedNode) {
+                    // Same node clicked - reset
+                    currentState = 'initial';
+                    LayoutManager.arrangeCircular();
+                    selectedNode = null;
+                    return;
+                } else {
+                    // Different node clicked - switch layouts
+                    if (clickedNode.type === 'line') {
+                        currentState = 'line';
+                        LayoutManager.arrangeLineLayout(clickedNode);
+                    } else if (clickedNode.type === 'strophe') {
+                        currentState = 'strophe';
+                        LayoutManager.arrangeStropheLayout(clickedNode);
+                    } else if (clickedNode.type === 'poem') {
+                        currentState = 'poem';
+                        LayoutManager.arrangePoemLayout();
+                    }
+                }
+                selectedNode = clickedNode;
+            } else {
+                // Clicked outside nodes - reset to initial state
+                currentState = 'initial';
+                LayoutManager.arrangeCircular();
+                selectedNode = null;
+            }
+        }
+
+        /**
+         * Mouse drag handler
+         */
+        function mouseDragged() {
+            if (draggedNode) {
+                draggedNode.updateDrag(mouseX, mouseY);
+            }
+        }
+
+        /**
+         * Mouse release handler
+         */
+        function mouseReleased() {
+            if (draggedNode) {
+                draggedNode.stopDrag();
+                draggedNode = null;
+            }
+        }
+        
+        /**
+         * Window resize handler - callback function
+         */
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            LayoutManager.arrangeCircular();
+        }
+    </script>
+
+</body>
+</html>
