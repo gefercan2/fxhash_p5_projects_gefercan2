@@ -134,8 +134,8 @@
         class FloatingAnimation {
             constructor() {
                 this.time = 0;
-                this.speed = 0.02;
-                this.amplitude = 3.5;
+                this.speed = 0.04;
+                this.amplitude = 4.5;
             }
 
             update() {
@@ -191,9 +191,9 @@
              */
             getColor() {
                 const colors = {
-                    'poem': 	[220, 270, 240],
-                    'strophe':  [115, 250, 240],
-                    'line': 	[170, 250, 225],
+                    'poem': 	[120],
+                    'strophe':  [115],
+                    'line': 	[110],
                     'word': 	[270, 235, 250]
                 };
                 return colors[this.type];
@@ -225,8 +225,8 @@
                 const color = this.getColor();
                 fill(color[0], color[1], color[2], this.opacity * 180);
                 //stroke(50, this.opacity * 255);
-                //strokeWeight(0.5);
-		noStroke();
+                strokeWeight(0.5);
+		
                 
                 const padding = 15;
                 textSize(this.type === 'poem' ? 20 : this.type === 'strophe' ? 16 : 14);
@@ -580,7 +580,7 @@
         }
         
         function draw() {
-            background(240);
+            background(255);
             
             // Update floating animation
             floatingAnim.update();
