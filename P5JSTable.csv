@@ -23,15 +23,16 @@ Day 17,Functions. Learn to wrap your drawing code into a custom function like dr
 Day 18,Transformations. Master translate(), rotate() and push()/pop().
 Day 19,Trigonometry. Use sin() and cos() for smooth  wave-like movement.
 Day 20,Arrays. Store multiple values to keep track of many objects at once.
-Day 21,Mini-Project: A generative pattern generator. Press a key to "re-roll" a random beautiful grid.
+Day 21,Mini-Project: A generative pattern generator. Press a key to  re-roll  a random beautiful grid.
 
-Week 4: Objects and Complexity,Goal: Think like a programmer.
-Day 22,Object-Oriented Programming (Classes). Build a "template" for an object.
-Day 23,Multiple Objects. Use an array to manage 50 "Bubble" or "Particle" objects.
+Week 4: Objects and Complexity-Goal: Think like a programmer.
+Day 22,Object-Oriented Programming (Classes). Build a  template  for an object.
+Day 23,Multiple Objects. Use an array to manage 50 Bubble or Particle objects.
 Day 24,Collision Detection. Make objects react when they touch each other.
 Day 25,Media. Learn loadImage() and image() to bring outside graphics into your sketch.
 Day 26,Sound. Introduction to the p5.sound library (making noises on click).
-Day 27-30,Final Project: Build something complete. Ideas > A simple game (Snake or Pong) - An interactive "Music Visualizer." -A "Generative Art Garden" that grows as you move the mouse.
+Day 27-30,Final Project: Build something complete. Ideas > A simple game (Snake or Pong) - An interactive Music Visualizer. -A  Generative Art Garden  that grows as you move the mouse.
+
 
 
 
