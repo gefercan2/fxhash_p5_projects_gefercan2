@@ -12,23 +12,36 @@ The best way to tackle this is to spend 30–60 minutes a day. Use the p5.js Web
 # Week 1: Shapes and Space
 ## Goal: Get comfortable with the coordinate system and drawing static images.
 
-## Day 1: The Canvas. Understand setup() vs draw(). Learn createCanvas() and background().
-## Day 2: 2D Shapes. Draw rect(), ellipse(), line(), and triangle().
-## Day 3: Color & Style. Explore fill(), stroke(), strokeWeight(), and RGB/Hex values.
-## Day 4: The Coordinate System. Practice placing shapes relative to each other (the origin is the top-left corner!).
-## Day 5: Custom Shapes. Use beginShape(), vertex(), and endShape().
-## Day 6-7: Mini-Project: Create a "Self-Portrait" or a "Robot" using only basic shapes and colors.
+### Day 1: 
+The Canvas. Understand setup() vs draw(). Learn createCanvas() and background().
+### Day 2: 
+2D Shapes. Draw rect(), ellipse(), line(), and triangle().
+### Day 3: 
+Color & Style. Explore fill(), stroke(), strokeWeight(), and RGB/Hex values.
+### Day 4: 
+The Coordinate System. Practice placing shapes relative to each other (the origin is the top-left corner!).
+### Day 5: 
+Custom Shapes. Use beginShape(), vertex(), and endShape().
+### Day 6-7: 
+Mini-Project: Create a "Self-Portrait" or a "Robot" using only basic shapes and colors.
 
 # Week 2: Variables and Animation
 ## Goal: Make things move and react to you.
 
-## Day 8: Variables. Use let to create variables for position (x, y) and size.
-## Day 9: Built-in Variables. Experiment with mouseX and mouseY.
-## Day 10: Basic Animation. Increment a variable (e.g., x = x + 1) inside draw() to move a shape.
-## Day 11: The random() function. Create jittery movement or random color palettes.
-## Day 12: The map() function. Learn to "re-map" values (e.g., use mouse position to control a color range).
-## Day 13: Conditionals (if/else). Make a ball "bounce" when it hits the edge of the screen.
-## Day 14: Mini-Project: Create an interactive drawing tool (a "Paint" program) where clicking changes colors.
+### Day 8: 
+Variables. Use let to create variables for position (x, y) and size.
+### Day 9: 
+Built-in Variables. Experiment with mouseX and mouseY.
+### Day 10: 
+Basic Animation. Increment a variable (e.g., x = x + 1) inside draw() to move a shape.
+### Day 11: 
+The random() function. Create jittery movement or random color palettes.
+### Day 12: 
+The map() function. Learn to "re-map" values (e.g., use mouse position to control a color range).
+### Day 13: 
+Conditionals (if/else). Make a ball "bounce" when it hits the edge of the screen.
+### Day 14: 
+Mini-Project: Create an interactive drawing tool (a "Paint" program) where clicking changes colors.
 
 ## Week 3: Efficiency and Logic
 Goal: Stop repeating yourself and start organizing.
