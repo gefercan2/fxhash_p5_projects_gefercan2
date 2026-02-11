@@ -16,13 +16,13 @@ The best way to tackle this is to spend 30–60 minutes a day. Use the p5.js Web
 
 #3 Week 1: Shapes and Space
 ## Goal: Get comfortable with the coordinate system and drawing static images.
-
-| ### Day 1: | The Canvas. Understand setup() vs draw(). Learn createCanvas() and background().|
-| ### Day 2: | 2D Shapes. Draw rect(), ellipse(), line(), and triangle().|
-| ### Day 3: | Color & Style. Explore fill(), stroke(), strokeWeight(), and RGB/Hex values.|
-| ### Day 4: | The Coordinate System. Practice placing shapes relative to each other (the origin is the top-left corner!).|
-| ### Day 5: | Custom Shapes. Use beginShape(), vertex(), and endShape().|
-| ### Day 6-7: | Mini-Project: Create a "Self-Portrait" or a "Robot" using only basic shapes and colors.|
+| :--- | :---: |
+| Day 1: | The Canvas. Understand setup() vs draw(). Learn createCanvas() and background().|
+| Day 2: | 2D Shapes. Draw rect(), ellipse(), line(), and triangle().|
+| Day 3: | Color & Style. Explore fill(), stroke(), strokeWeight(), and RGB/Hex values.|
+| Day 4: | The Coordinate System. Practice placing shapes relative to each other (the origin is the top-left corner!).|
+| Day 5: | Custom Shapes. Use beginShape(), vertex(), and endShape().|
+| Day 6-7: | Mini-Project: Create a "Self-Portrait" or a "Robot" using only basic shapes and colors.|
 
 # Week 2: Variables and Animation
 ## Goal: Make things move and react to you.
