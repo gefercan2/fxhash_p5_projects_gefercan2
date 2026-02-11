@@ -14,7 +14,7 @@ Week 2, Variables and Animation , Goal: Make things move and react to you, Day 1
 Week 2, Variables and Animation ,Goal: Make things move and react to you, Day 14, Mini-Project  Create an interactive drawing tool (a Paint program) where clicking changes colors
 Week 3, Efficiency and Logic,Goal: Stop repeating yourself and start organizing,Day 15, Loops (for loops). Draw 100 circles with 3 lines of code
 Week 3, Efficiency and Logic,Goal: Stop repeating yourself and start organizing,Day 16, Nested Loops. Create a grid or a patterned wallpaper
-Week 3, Efficiency and Logic,Goal: Stop repeating yourself and start organizing,Day 17, Functions. Learn to wrap your drawing code into a custom function like drawTree(x, y)
+Week 3, Efficiency and Logic,Goal: Stop repeating yourself and start organizing,Day 17, Functions. Learn to wrap your drawing code into a custom function like drawTree(x  y)
 Week 3, Efficiency and Logic, Goal: Stop repeating yourself and start organizing,Day 18, Transformations. Master translate()  rotate() and push()/pop()
 Week 3, Efficiency and Logic ,Goal: Stop repeating yourself and start organizing,Day 19, Trigonometry. Use sin() and cos() for smooth  wave-like movement
 Week 3, Efficiency and Logic,Goal: Stop repeating yourself and start organizing,Day 20, Arrays. Store multiple values to keep track of many objects at once
@@ -25,6 +25,7 @@ Week 4, Objects and Complexity,Goal: Think like a programmer,Day 24, Collision D
 Week 4, Objects and Complexity,Goal: Think like a programmer,Day 25, Media. Learn loadImage() and image() to bring outside graphics into your sketch
 Week 4, Objects and Complexity,Goal: Think like a programmer,Day 26, Sound. Introduction to the p5.sound library (making noises on click)
 Week 4, Objects and Complexity,Goal: Think like a programmer,Day 27-30, Final Project: Build something complete. Ideas > A simple game (Snake or Pong) - An interactive Music Visualizer. -A  Generative Art Garden  that grows as you move the mouse
+
 
 
 
