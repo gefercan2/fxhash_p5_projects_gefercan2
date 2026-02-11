@@ -31,19 +31,8 @@ Day 23,Multiple Objects. Use an array to manage 50 "Bubble" or "Particle" object
 Day 24,Collision Detection. Make objects react when they touch each other.
 Day 25,Media. Learn loadImage() and image() to bring outside graphics into your sketch.
 Day 26,Sound. Introduction to the p5.sound library (making noises on click).
-Day 27-30,Final Project: Build something complete. Ideas:
-
-A simple game (Snake or Pong).
-
-An interactive "Music Visualizer."
-
-A "Generative Art Garden" that grows as you move the mouse.
-
-Essential Resources
-The Coding Train (YouTube): Daniel Shiffman is the "patron saint" of p5.js. His Code! Programming with p5.js playlist is gold.
-
-p5.js Reference: Keep the Reference Page open at all times. It's the best documentation in the dev world.
+Day 27-30,Final Project: Build something complete. Ideas > A simple game (Snake or Pong) - An interactive "Music Visualizer." -A "Generative Art Garden" that grows as you move the mouse.
 
 
-OpenProcessing: Look at what others are making for inspiration (and to peek at their code).
+
 
