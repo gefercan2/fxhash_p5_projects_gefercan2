@@ -1,5 +1,5 @@
 
-Week 1: Shapes and Space,Goal: Get comfortable with the coordinate system and drawing static images.
+Week 1 Shapes and Space,Goal Get comfortable with the coordinate system and drawing static images.
 Day 1, The Canvas. Understand setup() vs draw(). Learn createCanvas() and background().
 Day 2, 2D Shapes. Draw rect()  ellipse()  line()  and triangle().
 Day 3, Color & Style. Explore fill(), stroke()  strokeWeight()  and RGB/Hex values.
@@ -43,5 +43,6 @@ Essential Resources
 The Coding Train (YouTube): Daniel Shiffman is the "patron saint" of p5.js. His Code! Programming with p5.js playlist is gold.
 
 p5.js Reference: Keep the Reference Page open at all times. It's the best documentation in the dev world.
+
 
 OpenProcessing: Look at what others are making for inspiration (and to peek at their code).
