@@ -5,6 +5,11 @@ Some of the sketches do not use FX HAsh yet but are implemented using random. ra
 Here also are other samples , mainly because they are built in p5.js
 
 -----------------------------------------------------------------------------
+#Essential Resources
+### The Coding Train (YouTube): Daniel Shiffman is the "patron saint" of p5.js. His Code! Programming with p5.js playlist is gold.
+### p5.js Reference: Keep the Reference Page open at all times. It's the best documentation in the dev world.
+### OpenProcessing: Look at what others are making for inspiration (and to peek at their code).
+-----------------------------------------------------------------------------
 
 Learning p5.js in a month is a fantastic goal. Because p5.js is designed for visual instant gratification, you’ll be making "art" on Day 1.
 The best way to tackle this is to spend 30–60 minutes a day. Use the p5.js Web Editor so you don't have to worry about setup.
