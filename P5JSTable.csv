@@ -1,3 +1,4 @@
+Week,Topic,day,actions
 Week 1, Shapes and Space -Goal Get comfortable with the coordinate system and drawing static images,Day 1, The Canvas. Understand setup() vs draw(). Learn createCanvas() and background()
 Week 1, Shapes and Space -Goal Get comfortable with the coordinate system and drawing static images,Day 2, 2D Shapes. Draw rect()  ellipse()  line()  and triangle()
 Week 1, Shapes and Space -Goal Get comfortable with the coordinate system and drawing static images,Day 3, Color & Style Explore fill() stroke()  strokeWeight()  and RGB/Hex values
@@ -24,6 +25,7 @@ Week 4, Objects and Complexity-Goal: Think like a programmer,Day 24, Collision D
 Week 4, Objects and Complexity-Goal: Think like a programmer,Day 25, Media. Learn loadImage() and image() to bring outside graphics into your sketch
 Week 4, Objects and Complexity-Goal: Think like a programmer,Day 26, Sound. Introduction to the p5.sound library (making noises on click)
 Week 4, Objects and Complexity-Goal: Think like a programmer,Day 27-30, Final Project: Build something complete. Ideas > A simple game (Snake or Pong) - An interactive Music Visualizer. -A  Generative Art Garden  that grows as you move the mouse
+
 
 
 
