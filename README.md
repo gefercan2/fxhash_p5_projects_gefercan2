@@ -12,30 +12,36 @@ Here also are other samples , mainly because they are built in p5.js
 -----------------------------------------------------------------------------
 Learning p5.js in a month is a fantastic goal. Because p5.js is designed for visual instant gratification, you’ll be making "art" on Day 1.
 The best way to tackle this is to spend 30–60 minutes a day. Use the p5.js Web Editor so you don't have to worry about setup.
-Week,Day,Topic,Goal
-1,1,The Canvas,Understand setup() vs draw() and the coordinate system.
-1,2,2D Shapes,"Draw primitives like rect(), ellipse(), and line()."
-1,3,Color & Style,"Master fill(), stroke(), and RGB/Hex values."
-1,4,Coordinates,Practice spatial placement and layering shapes.
-1,5,Custom Shapes,Use beginShape() and vertex() for complex polygons.
-1,6-7,Mini-Project,"Create a static ""Self-Portrait"" or ""Robot."""
-2,8,Variables,Use let to store positions and sizes.
-2,9,Mouse Variables,Create sketches that track mouseX and mouseY.
-2,10,Basic Animation,Increment variables to create movement over time.
-2,11,Randomness,Use random() for jitter and varied color palettes.
-2,12,The map() Function,"Translate one range of numbers to another (e.g., mouse to color)."
-2,13,Conditionals,"Use if/else statements for ""bouncing"" logic."
-2,14,Mini-Project,Build an interactive drawing tool/paint program.
-3,15,for Loops,Automate repetitive tasks and draw multiple objects.
-3,16,Nested Loops,"Create grids, tiled patterns, and wallpapers."
-3,17,Custom Functions,Clean up code by creating your own reusable functions.
-3,18,Transformations,"Use translate(), rotate(), and push/pop."
-3,19,Trigonometry,"Use sin() and cos() for oscillating, organic motion."
-3,20,Arrays,Manage lists of data (like multiple circle positions).
-3,21,Mini-Project,Build a generative grid-art generator.
-4,22,OOP / Classes,"Create ""blueprints"" for objects with properties and behaviors."
-4,23,Particle Systems,Use arrays to manage 50+ moving object instances.
-4,24,Collisions,Write logic for when two objects intersect.
-4,25,Media (Images),Load and display external .jpg or .png files.
-4,26,Sound,Use the p5.sound library for audio interaction.
-4,27-30,Final Project,"Develop a game, visualizer, or complex generative work."
+
+Here is the learning schedule organized into a scannable table.
+
+| Week | Day | Topic | Goal |
+| --- | --- | --- | --- |
+| **Week 1** | 1 | The Canvas | Understand `setup()`, `draw()`, and the coordinate system. |
+|  | 2 | 2D Shapes | Draw primitives like `rect()`, `ellipse()`, and `line()`. |
+|  | 3 | Color & Style | Master `fill()`, `stroke()`, and color values. |
+|  | 4 | Coordinates | Practice spatial placement and relative positioning. |
+|  | 5 | Custom Shapes | Use `beginShape()` and `vertex()` for complex polygons. |
+|  | 6-7 | **Project** | Create a "Self-Portrait" or "Robot" using static shapes. |
+| **Week 2** | 8 | Variables | Create and use custom variables (`let`) for position/size. |
+|  | 9 | Built-in Vars | Utilize interactive variables like `mouseX` and `mouseY`. |
+|  | 10 | Animation | Increment variables inside `draw()` to create movement. |
+|  | 11 | Randomness | Use `random()` for jitter and varied color palettes. |
+|  | 12 | The `map()` Function | Translate one range of numbers into another for control. |
+|  | 13 | Conditionals | Use `if/else` logic to create bouncing or edge detection. |
+|  | 14 | **Project** | Build an interactive "Paint" program/drawing tool. |
+| **Week 3** | 15 | For Loops | Use loops to draw multiple objects with minimal code. |
+|  | 16 | Nested Loops | Create complex grids and repeating patterns. |
+|  | 17 | Functions | Organize code into reusable custom functions. |
+|  | 18 | Transformations | Master `translate()`, `rotate()`, and `push/pop`. |
+|  | 19 | Trigonometry | Use `sin()` and `cos()` for wave-like motion. |
+|  | 20 | Arrays | Store lists of data to manage multiple elements. |
+|  | 21 | **Project** | Design a generative wallpaper/pattern generator. |
+| **Week 4** | 22 | Classes (OOP) | Create "blueprints" for objects using Classes. |
+|  | 23 | Object Arrays | Manage a collection of active objects (e.g., particles). |
+|  | 24 | Collision | Write logic to detect when two objects intersect. |
+|  | 25 | External Media | Import and display images using `loadImage()`. |
+|  | 26 | Sound | Add audio triggers and effects using p5.sound. |
+|  | 27-30 | **Final Project** | Build a game, music visualizer, or generative garden. |
+
+
